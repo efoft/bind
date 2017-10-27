@@ -1,0 +1,20 @@
+$TTL <%= @ttl %>
+@			IN SOA  <%= @soa_mastername %>. <%= @soa_hostmaster %>. (
+<% serial=Time.now.strftime("%Y%m%d%H") -%>
+				<%= serial %>           ; serial
+                                <%= @refresh %>         ; refresh
+                                <%= @retry %>           ; retry
+                                <%= @expire %>          ; expire
+                                <%= @minimum %>         ; minimum
+                                )
+
+<% @records.select{|rr| rr['type'] == 'NS' }.each do |rr| -%>
+<%= sprintf("%-20s %-5s %-5s %-10s",'', 'NS', '', rr['name']) %>
+<% end -%>
+<% @records.select{|rr| rr['type'] == 'MX' }.each do |rr| -%>
+<%= sprintf("%-20s %-5s %-5s %-10s",'','MX', rr['priority'], rr['value']) %>
+<% end -%>
+
+<% @records.select{|rr| (rr['type'] != 'NS' and rr['type'] != 'MX') }.each do |rr| -%>
+<%= sprintf("%-20s %-11s %-20s",rr['name'], rr['type'], rr['value']) %>
+<% end -%>

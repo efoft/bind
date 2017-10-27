@@ -1,0 +1,14 @@
+
+view "external" in {
+
+    match-clients {
+        !trusted;
+        any;
+    };
+    allow-query { any; };
+    recursion no;
+    additional-from-auth no;
+    additional-from-cache no;
+
+    include "<%= @ext_zones_list %>";
+};

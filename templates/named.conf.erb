@@ -1,0 +1,154 @@
+//
+// named.conf
+// WARNING: Puppet managed, do not edit!
+//
+
+# ACL
+acl trusted {
+  localhost;
+<% if !@acl_trusted.empty? -%>
+<% @acl_trusted.each do |line| -%>
+  <%= line %>;
+<% end -%>
+<% else -%>
+  localnets;
+<% end -%>
+};
+<% if !@acl_bogon.empty? -%>
+
+acl bogon {
+<% @acl_bogon.each do |line| -%>
+  <%= line %>;
+<% end -%>
+};
+<% end -%>
+<% if !@acls.empty? -%> 
+<% @acls.sort_by {|k,v| k}.each do |k,v| -%>
+
+acl <%= k %> {
+<% v.each do |line| -%>
+  <%= line %>
+<% end -%>
+};
+<% end -%>
+<% end #end of acls -%>
+
+include "/etc/rndc.key";
+
+# Options
+options {
+    listen-on port <%= @listen_port %><% if @listen_ip %> { <%= @listen_ip.join('; ') %>; }<% end %>;
+<% if !@forwarders.empty? -%>
+    forwarders { <%= @forwarders.join("; ") %>; };
+    forward <%= @forward %>;
+<% end -%>
+    directory "<%= @datadir %>";
+    dump-file "<%= @datadir %>/data/cache_dump.db";
+    statistics-file "<%= @datadir %>/data/statistics.txt";
+    memstatistics-file "<%= @datadir %>/data/memstatistics.txt";
+    managed-keys-directory "<%= @datadir %>/dynamic";
+<% if !@acl_bogon.empty? -%>
+    blackhole { bogon; };
+<% end -%>
+    allow-query { trusted; };
+    allow-query-cache { trusted; };
+    allow-recursion { trusted; };
+    allow-transfer { none; };
+    notify <%= @notify_slaves %>;
+
+<% if @check_names -%>
+    # remove checks for invalid char in names (like in MS AD zones)
+    check-names master <%= @check_names %>;
+    check-names slave <%= @check_names %>; 
+    check-names response <%= @check_names %>;
+
+<% end -%>
+<% if @dnssec_enable -%>
+    dnssec-enable yes;
+    dnssec-validation yes;
+    dnssec-lookaside auto;
+
+<% end -%>
+
+    /* Path to ISC DLV key */
+    bindkeys-file "/etc/named.iscdlv.key";
+
+    auth-nxdomain no;       # conform to RFC1035
+
+    zone-statistics yes;
+    transfer-format many-answers;
+    max-transfer-time-in 60;
+    interface-interval 0;
+
+<% if !@extra_options.empty? -%>
+<% @extra_options.sort_by {|k, v| k}.each do |k,v| -%>
+    <%= k %> <%= v %>;
+<% end -%>
+<% end -%>
+};
+
+logging {
+    channel main_log {
+        file "/var/log/named.log" versions 3 size 5m;
+        severity info;
+        print-time yes;
+        print-severity yes;
+        print-category yes;
+    };
+    channel audit_log {
+        // Security related messages
+        file "/var/log/audit.log" versions 3 size 5m;
+        severity debug;
+        print-category yes;
+        print-severity yes;
+        print-time yes;
+    };
+
+    channel update_log {
+        // Zone update messages
+        file "/var/log/update.log" versions 3 size 5m;
+        severity debug;
+        print-category yes;
+        print-severity yes;
+        print-time yes;
+    };
+
+    category default{ main_log; };
+    category general { main_log; };
+    category security { audit_log; main_log; };
+    category config { main_log; };
+    category resolver { audit_log; };
+    category xfer-in { audit_log; };
+    category xfer-out { audit_log; };
+    category notify { audit_log; };
+    category client { audit_log; };
+    category network { audit_log; };
+    category update { update_log; };
+    category update-security { update_log; };
+    category queries { audit_log; };
+    category lame-servers { null; };
+};
+
+controls {
+    inet 127.0.0.1 port 953
+    allow { localhost;} keys { "rndc-key"; };
+};
+
+view "internal" in {
+
+    match-clients {
+         key "rndc-key";
+         trusted;
+    };
+    recursion yes;
+    additional-from-auth yes;
+    additional-from-cache yes;
+
+    zone "." IN {
+        type hint;
+        file "named.ca";
+    };
+
+    include "/etc/named.rfc1912.zones";
+    include "<%= @int_zones_list %>";
+};

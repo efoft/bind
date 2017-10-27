@@ -1,0 +1,22 @@
+zone "<%= @zonename %>" IN {
+<% if @type == 'master' -%>
+  type master;
+  file "<%= @view %>/<%= @zonename %>";
+<% if @update_by_key or @updaters -%>
+  allow-update { <% if @update_by_key %>key "rndc-key"; <% end %><% if @updaters %><%= @updaters.join('; ') %>;<% end %> };
+<% end -%>
+<% if @slaves -%>
+  allow-transfer { <%= @slaves.join('; ') %>; };
+<% end -%>
+};
+
+<% elsif @type == 'slave' -%>
+  type slave;
+  file "slaves/<%= @zonename %>";
+<% if @update_by_key or @updaters -%>
+  allow-update-forwarding { <% if @update_by_key %>key "rndc-key"; <% end %><% if @updaters %><%= @updaters.join('; ') %>;<% end %> };
+<% end -%>
+  masters { <%= @masters.join('; ') %>; };
+};
+
+<% end -%>
