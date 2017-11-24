@@ -81,5 +81,7 @@ class bind::config {
     order   => '02',
   }
 
-  create_resources('bind::zone', $bind::zones)
+  if $ensure == 'present' {
+    create_resources('bind::zone', $bind::zones)
+  }
 }
