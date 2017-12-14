@@ -1,22 +1,22 @@
 # === Define bind::zone ===
 #
 define bind::zone (
-  String $zonename                                = $title,
+  String $zonename                                                           = $title,
   Enum['internal','external'] $view,
-  Enum['master','slave'] $type                    = 'master',
-  Optional[Array[Stdlib::Compat::Ipv4]] $masters  = undef,
-  Optional[Array[Stdlib::Compat::Ipv4]] $slaves   = undef,
-  Optional[Array[Stdlib::Compat::Ipv4]] $updaters = undef,
-  Boolean $update_by_key                          = false,
-  Boolean $replace                                = false,
-  Numeric $ttl                                    = 86400,
-  String $soa_mastername                          = $facts['networking']['fqdn'],
-  String $soa_hostmaster                          = 'hostmaster',
-  Variant[String,Numeric] $refresh                = '1D',
-  Variant[String,Numeric] $retry                  = '15M',
-  Variant[String,Numeric] $expire                 = '1W',
-  Variant[String,Numeric] $minimum                = '1D',
-  Tuple $records                                  = [],
+  Enum['master','slave'] $type                                               = 'master',
+  Optional[Array[Stdlib::Compat::Ipv4]] $masters                             = undef,
+  Optional[Array[Stdlib::Compat::Ipv4]] $slaves                              = undef,
+  Optional[Array[Variant[Stdlib::Compat::Ipv4,Enum['localhost']]]] $updaters = undef,
+  Boolean $update_by_key                                                     = false,
+  Boolean $replace                                                           = false,
+  Numeric $ttl                                                               = 86400,
+  String $soa_mastername                                                     = $facts['networking']['fqdn'],
+  String $soa_hostmaster                                                     = 'hostmaster',
+  Variant[String,Numeric] $refresh                                           = '1D',
+  Variant[String,Numeric] $retry                                             = '15M',
+  Variant[String,Numeric] $expire                                            = '1W',
+  Variant[String,Numeric] $minimum                                           = '1D',
+  Tuple $records                                                             = [],
 ) {
 
   if $type == 'slave' and ! $masters {

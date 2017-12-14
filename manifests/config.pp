@@ -23,10 +23,10 @@ class bind::config {
 
   if $ensure == 'present' {
     exec { 'create-rndckey-file':
-      command         => 'rndc-confgen -a -k "rndc-key" -r /dev/urandom',
-      path            => [ '/usr/sbin', '/usr/bin' ],
-      creates         => $bind::params::keyfile,
-      require         => Package[$bind::install::package_name],
+      command => 'rndc-confgen -a -k "rndc-key" -r /dev/urandom',
+      path    => [ '/usr/sbin', '/usr/bin' ],
+      creates => $bind::params::keyfile,
+      require => Package[$bind::install::package_name],
     }
   }
 
