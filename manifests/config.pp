@@ -51,9 +51,6 @@ class bind::config {
   file { ["${bind::params::datadir}/internal", "${bind::params::datadir}/external"]:
     ensure  => $ensure ? { 'present' => 'directory', 'absent' => 'absent' },
     mode    => '0770',
-    force   => true,
-    recurse => true,
-    purge   => true,
   }
 
   concat { $bind::params::cfgfile: }
