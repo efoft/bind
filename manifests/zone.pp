@@ -40,9 +40,9 @@ define bind::zone (
   if $type == 'master' {
     file { "${bind::params::datadir}/${view}/${zonename}":
       ensure  => file,
-      owner   => 'root',
+      owner   => ($update_by_key or $updaters) ? { true => 'named', false => 'root' }, # prevent modification if no updaters
       group   => 'named',
-      mode    => ($update_by_key or $updaters) ? { true => '0770', false => '0640' },
+      mode    => '0640',
       content => template('bind/zonefile.erb'),
       replace => $replace,
       notify  => Service[$bind::service::service_name],
