@@ -108,7 +108,7 @@ class bind (
   Array $acl_bogon                                    = $bind::params::acl_bogon,
   Hash $acls                                          = {},
   Numeric $listen_port                                = $bind::params::listen_port,
-  Optional[Array[Stdlib::Ip_address]] $listen_ip      = $bind::params::listen_ip,
+  Optional[Array[Stdlib::Ip::Address]] $listen_ip     = $bind::params::listen_ip,
   Array[Stdlib::Ip::Address] $forwarders              = $bind::params::forwarders,
   Enum['first','only'] $forward                       = 'first',
   Enum['yes','no','explicit'] $notify_slaves          = $bind::params::notify_slaves,

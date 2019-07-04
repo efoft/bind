@@ -19,7 +19,7 @@ class bind::params {
   $acl_trusted   = ['localnets']
   $acl_bogon     = []
   $forwarders    = []
-  $listen_ip     = ['0.0.0.0/0']
+  $listen_ip     = ['0.0.0.0']
   $listen_port   = 53
   $notify_slaves = 'yes'
   $int_zones_list = "${cfgdir}/internal.zones"
