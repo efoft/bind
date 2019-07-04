@@ -37,7 +37,7 @@ include "/etc/rndc.key";
 
 # Options
 options {
-    listen-on port <%= @listen_port %> { <% if @listen_ip %><%= @listen_ip.join('; ') %><% else %>0.0.0.0/0<% end %>; }
+    listen-on port <%= @listen_port %> { <% if @listen_ip %><%= @listen_ip.join('; ') %><% else %>0.0.0.0/0<% end %>; };
 <% if @forwarders -%>
     forwarders { <%= @forwarders.join("; ") %>; };
     forward <%= @forward %>;
