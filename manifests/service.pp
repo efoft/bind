@@ -1,19 +1,14 @@
-# === Class bind::service ===
 #
-class bind::service {
+class bind::service inherits bind {
 
-  $service_name = $::bind::chroot ?
+  $_service_name = $chroot ?
   {
-    true => $::operatingsystemmajrelease ?
-    {
-      '6' => $::bind::params::service_name,
-      '7' => "${::bind::params::service_name}-chroot"
-    },
-    false => $::bind::params::service_name
+    true  => $service_name_chroot,
+    false => $service_name
   }
 
-  service { $service_name:
-    ensure => $::bind::ensure ? { 'present' => 'running', 'absent' => undef },
-    enable => $::bind::ensure ? { 'present' => true, 'absent' => undef },
+  service { $_service_name:
+    ensure => $ensure ? { 'present' => 'running', 'absent' => undef },
+    enable => $ensure ? { 'present' => true, 'absent' => undef },
   }
 }

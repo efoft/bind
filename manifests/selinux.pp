@@ -1,9 +1,8 @@
-# === Class bind::selinux ===
 #
-class bind::selinux {
+class bind::selinux inherits bind {
 
   selboolean { 'named_write_master_zones':
-    persistent  => true,
-    value => 'on',
+    persistent => true,
+    value      => $ensure ? { 'present' => 'on', 'absent' => 'off' },
   }
 }

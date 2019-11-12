@@ -1,12 +1,9 @@
-# === Class bind::install ===
 #
-class bind::install {
+class bind::install inherits bind {
 
-  assert_private('This is private class')
+  $_package_name = $chroot ? { true => "${package_name}-chroot", false => $package_name }
 
-  $package_name = $bind::chroot ? { true => "${bind::params::package_name}-chroot", false => $bind::params::package_name }
-
-  package { $package_name:
-    ensure => $bind::ensure ? { 'absent' => 'purged', default => $ensure }
+  package { $_package_name:
+    ensure => $ensure ? { 'present' => 'present', 'absent' => 'purged' }
   }
 }

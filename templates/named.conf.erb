@@ -6,7 +6,7 @@
 # ACL
 acl trusted {
   localhost;
-<% if !@acl_trusted.empty? -%>
+<% if ! @acl_trusted.empty? -%>
 <% @acl_trusted.each do |line| -%>
   <%= line %>;
 <% end -%>
@@ -14,7 +14,7 @@ acl trusted {
   localnets;
 <% end -%>
 };
-<% if !@acl_bogon.empty? -%>
+<% if ! @acl_bogon.empty? -%>
 
 acl bogon {
 <% @acl_bogon.each do |line| -%>
@@ -22,7 +22,7 @@ acl bogon {
 <% end -%>
 };
 <% end -%>
-<% if !@acls.empty? -%> 
+<% if ! @acls.empty? -%> 
 <% @acls.sort_by {|k,v| k}.each do |k,v| -%>
 
 acl <%= k %> {
@@ -37,8 +37,8 @@ include "/etc/rndc.key";
 
 # Options
 options {
-    listen-on port <%= @listen_port %> { <% if @listen_ip %><%= @listen_ip.join('; ') %><% else %>0.0.0.0/0<% end %>; };
-<% if @forwarders -%>
+    listen-on port <%= @listen_port %> { <% if ! @listen_ip.empty? %><%= @listen_ip.join('; ') %><% else %>0.0.0.0/0<% end %>; };
+<% if ! @forwarders.empty? -%>
     forwarders { <%= @forwarders.join("; ") %>; };
     forward <%= @forward %>;
 <% end -%>
@@ -47,7 +47,7 @@ options {
     statistics-file "<%= @datadir %>/data/statistics.txt";
     memstatistics-file "<%= @datadir %>/data/memstatistics.txt";
     managed-keys-directory "<%= @datadir %>/dynamic";
-<% if !@acl_bogon.empty? -%>
+<% if ! @acl_bogon.empty? -%>
     blackhole { bogon; };
 <% end -%>
     allow-query { trusted; };
@@ -66,7 +66,6 @@ options {
 <% if @dnssec_enable -%>
     dnssec-enable yes;
     dnssec-validation yes;
-    dnssec-lookaside auto;
 
 <% end -%>
 
@@ -80,7 +79,7 @@ options {
     max-transfer-time-in 60;
     interface-interval 0;
 
-<% if !@extra_options.empty? -%>
+<% if ! @extra_options.empty? -%>
 <% @extra_options.sort_by {|k, v| k}.each do |k,v| -%>
     <%= k %> <%= v %>;
 <% end -%>
